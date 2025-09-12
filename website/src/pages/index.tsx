@@ -1,15 +1,13 @@
 import type {ReactNode} from 'react';
-import useDocusaurusContext from '@docusaurus/useDocusaurusContext';
 import Layout from '@theme/Layout';
 
 import Home from '../components/Home';
 
 export default function HomePage(): ReactNode {
-  const {siteConfig} = useDocusaurusContext();
   return (
     <Layout
-      title={`Hello from ${siteConfig.title}`}
-      description="Description will go into a meta tag in <head />">
+      title="도란보리"
+      description="서울시립대 TTS 학술 소모임">
       <Home />
     </Layout>
   );
