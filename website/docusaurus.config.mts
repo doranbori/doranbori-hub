@@ -1,5 +1,6 @@
-import {themes as prismThemes} from 'prism-react-renderer';
-import type {Config} from '@docusaurus/types';
+import { themes } from 'prism-react-renderer';
+
+import type { Config } from '@docusaurus/types';
 import type * as Preset from '@docusaurus/preset-classic';
 import tailwindPlugin from './plugins/tailwindPlugin';
 
@@ -7,33 +8,31 @@ const config: Config = {
   title: '도란보리',
   tagline: '서울시립대 TTS 학술 소모임',
   favicon: 'img/favicon.ico',
-
-  future: {
-    v4: true,
-  },
-
-  url: 'https://www.doranbori-hub.com/',
-  baseUrl: '/website/build',
-
+  url: 'https://doranbori.github.io/',
+  baseUrl: '/doranbori-hub/',
   organizationName: 'doranbori',
+  deploymentBranch: 'gh-pages',
   projectName: 'doranbori-hub',
-
   onBrokenLinks: 'throw',
-  onBrokenMarkdownLinks: 'warn',
-
+  onBrokenMarkdownLinks: 'throw',
+  future: {
+    v4: {
+      removeLegacyPostBuildHeadAttribute: true,
+      useCssCascadeLayers: false,
+    },
+  },
   i18n: {
     defaultLocale: 'ko',
     locales: ['ko'],
   },
-
   presets: [
     [
-      'classic',
+      '@docusaurus/preset-classic',
       {
         docs: {
+          path: 'docs',
           sidebarPath: './sidebars.ts',
-          editUrl:
-            'https://github.com/doranbori/doranbori-hub/tree/main/website/',
+          editUrl: 'https://github.com/doranbori/doranbori-hub/tree/main/website/',
         },
         blog: {
           showReadingTime: true,
@@ -41,8 +40,7 @@ const config: Config = {
             type: ['rss', 'atom'],
             xslt: true,
           },
-          editUrl:
-            'https://github.com/doranbori/doranbori-hub/tree/main/website/',
+          editUrl: 'https://github.com/doranbori/doranbori-hub/tree/main/website/',
           onInlineTags: 'warn',
           onInlineAuthors: 'warn',
           onUntruncatedBlogPosts: 'warn',
@@ -59,12 +57,13 @@ const config: Config = {
   ],
 
   themeConfig: {
-    image: 'img/docusaurus-social-card.jpg',
     navbar: {
-      title: 'DORANBORI HUB',
+      hideOnScroll: true,
+      title: '도란보리',
       logo: {
         alt: 'DORANBORI LOGO',
         src: 'img/logo.svg',
+        className: 'doranbori-nav-logo'
       },
       items: [
         {
@@ -73,16 +72,24 @@ const config: Config = {
           position: 'left',
           label: 'Tutorial',
         },
-        {to: '/blog', label: 'Blog', position: 'left'},
         {
-          href: 'https://github.com/facebook/docusaurus',
-          label: 'GitHub',
+          to: '/blog', 
+          label: 'Blog', 
+          position: 'left'
+        },
+        {
+          href: 'https://github.com/doranbori/doranbori-hub',
           position: 'right',
+          className: 'header-github-link',
         },
       ],
     },
+    colorMode: {
+      defaultMode: 'light',
+      disableSwitch: false,
+      respectPrefersColorScheme: true,
+    },
     footer: {
-      style: 'dark',
       links: [
         {
           title: 'Docs',
@@ -110,17 +117,22 @@ const config: Config = {
               to: '/blog',
             },
             {
-              label: 'GitHub',
-              href: 'https://github.com/doranbori/doranbori-hub',
+              label: 'Github',
+              href: 'https://github.com/doranbori/doranbori-hub'
             },
           ],
         },
       ],
-      copyright: `Copyright © ${new Date().getFullYear()} Doranbori, Inc. Built with Docusaurus.`,
+      logo: {
+        alt: 'DORANBORI LOGO',
+        src: 'img/logo.svg',
+        width: 40,
+      },
+      copyright: `Copyright © ${new Date().getFullYear()} - 도란보리`,
     },
     prism: {
-      theme: prismThemes.github,
-      darkTheme: prismThemes.dracula,
+      theme: themes.github,
+      darkTheme: themes.dracula,
     },
   } satisfies Preset.ThemeConfig,
 };
