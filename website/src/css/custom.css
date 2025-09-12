@@ -103,5 +103,13 @@ html[data-theme='dark'] .header-github-link::before {
     no-repeat;
 }
 
+.prism-code {
+  background-color: rgb(246, 248, 250) !important;
+}
+
+html[data-theme='dark'] .prism-code {
+  background-color: oklch(0.25 0.02 0) !important;
+}
+
 
 @import "tailwindcss";

@@ -131,8 +131,8 @@ const config: Config = {
       copyright: `Copyright © ${new Date().getFullYear()} - 도란보리`,
     },
     prism: {
-      theme: themes.github,
-      darkTheme: themes.dracula,
+      theme: themes.vsLight,
+      darkTheme: themes.vsDark,
     },
   } satisfies Preset.ThemeConfig,
 };
