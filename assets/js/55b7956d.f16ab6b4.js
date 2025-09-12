@@ -1,0 +1,1 @@
+"use strict";(self.webpackChunkdoranbori_hub_website=self.webpackChunkdoranbori_hub_website||[]).push([[656],{8842:e=>{e.exports=JSON.parse('{"metadata":{"permalink":"/doranbori-hub/blog","page":1,"postsPerPage":10,"totalPages":1,"totalCount":2,"blogDescription":"Blog","blogTitle":"Blog"}}')}}]);
