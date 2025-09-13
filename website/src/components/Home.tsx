@@ -6,7 +6,7 @@ export default function Home(): ReactNode {
       <div className="p-8 rounded-xl bg-white/10 w-11/12 text-center">
         {/** heading */}
         <div>
-          <div className="font-bold text-2xl">
+          <div className="font-bold md:text-2xl text-xl">
             서울시립대 TTS 학술 소모임
           </div>
           <div className="font-bold text-6xl text-shadow-md">
@@ -14,10 +14,10 @@ export default function Home(): ReactNode {
           </div>
         </div>
 
-        <div className="my-4 h-px w-150 bg-[color:var(--chestnut)] justify-self-center"></div>
+        <div className="my-4 h-px md:w-150 w-7/9 bg-[color:var(--chestnut)] justify-self-center"></div>
 
         <div>
-          <div className="text-xl">
+          <div className="md:text-xl text-l">
             도란보리에 오신 것을 환영합니다!
           </div>
 
