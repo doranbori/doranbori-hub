@@ -1,0 +1,128 @@
+---
+id: startover
+title: 시작하기
+---
+
+<p className="text-xl"> TTS 자습서에 오신 걸 환영합니다! 이 페이지에서는 여러분이 함께 공부하게 될 TTS의 기본적인 개념들을 소개합니다. </p>
+
+import Card from '@site/src/components/Card';
+
+<Card title="학습 내용">
+  - 음성 합성(Speech Synthesis)과 역사
+  - TTS의 기본 구조
+  - 현대적인 TTS
+  - 자습서 로드맵
+</Card>
+
+---
+
+## Speech Synthesis
+
+**음성 합성**은 *사람의 음성을 인공적으로 만들어내는 기술*을 말합니다. 음성 합성은 무려 **1003 AD**에도 시도된 적이 있었다고 합니다만, 제대로 연구되기 시작한 건 전기 공학과 신호 처리가 발명된 이후에서 였습니다. 특히 **1961년의 IBM 7094**는 최초의 노래하는 컴퓨터로 유명하죠!
+
+<div className="justify-items-center">
+  <iframe
+    width="560"
+    height="315"
+    src="https://www.youtube.com/embed/41U78QP8nBk?start=64"
+    title="YouTube video player"
+    frameborder="0"
+    className="mb-1"
+  ></iframe>
+  <p>**IBM 7094 - Daisy Bell (1961)**: 노래하는 최초의 컴퓨터</p>
+</div>
+
+
+### From Speech Synthesis to TTS
+
+컴퓨터가 음성을 합성하려면 **무엇을 말할 지**를 정해줘야 합니다. 그리고 정말 다행히도, 언어학자들이 이미 수많은 언어들에서 나타나는 음성들을 모아 [국제 음성 기호](https://ko.wikipedia.org/wiki/%EA%B5%AD%EC%A0%9C_%EC%9D%8C%EC%84%B1_%EA%B8%B0%ED%98%B8)로 표현해두었습니다! 그러므로 말하고 싶은 문장을 음성 기호에 맞게 변형하고 컴퓨터에 넣어주면 되겠습니다.
+
+import IPA from '../static/img/IPA.svg';
+
+<div className="justify-items-center rounded-xl p-2 border-2 border-[color:var(--espresso)] m-5 bg-[color:var(--espresso-dark)]">
+  <h4>국제 음성 기호(IPA)</h4>
+  <a 
+  href="https://ko.wikipedia.org/wiki/%EA%B5%AD%EC%A0%9C_%EC%9D%8C%EC%84%B1_%EA%B8%B0%ED%98%B8">
+    <IPA fill="white" className="w-80 h-20 justify-self-center"/>
+  </a>
+</div>
+
+그런데요... 그 음성 기호를 언어학자가 아니고서야, 어떻게 만들겠습니까... 그쵸?
+
+연구자들은 언어학자들처럼 비싼 전문 인력을 이런 단순 작업에 고용해서 사용하는 게 너무 아까웠습니다! 그래서 아예 **텍스트를 국제 음성 기호로 변환**하는 장치도 새로 만들어버리게 됩니다. 더이상 국제 음성 기호 같은 걸 고려할 필요가 없자, 음성 합성은 사실상 텍스트를 기반으로 이루어지게 되었습니다.
+
+이렇게, **TTS**(Text-to-Speech)가 탄생했습니다.
+
+---
+
+## TTS의 기본 구조
+
+TTS는 앞서 설명한 것처럼 두 단계로 구성됩니다.
+
+1. **언어 처리 (Linguistic Processing)**  
+  입력된 텍스트를 국제 음성 기호와 같은 *분석적 형태로 변환*합니다.
+
+2. **음성 합성 (Speech Generation)**  
+  분석된 언어 정보를 **실제 소리로 변환**합니다. 대표적으로 아래와 같은 기법들이 사용되었습니다.
+    - 규칙 기반 합성(rule-based synthesis),
+    - 연결 합성(concatenative synthesis),
+    - 통계적 합성(HMM 기반 등)
+
+이 구조는 비교적 단순하고 직관적이었지만, 결과물의 **자연스러움**과 **유연성** 면에서 한계가 분명했습니다. 아직도 기계음이 가득하고, 운율감은 있는 지도 모르겠고... 문제가 많았습니다!
+
+욕심이 가득해진 연구자들은 이젠 그냥 *발음이 잘 되는 것*으로는 만족할 수가 없었죠!
+
+
+### 현대적인 TTS
+
+딥러닝의 발전과 함께 TTS는 전통적인 언어 처리 - 음성 합성 구조를 유지하면서도, **모든 과정을 신경망 기반으로 모델링**할 수 있게 되었습니다. 특히 2019년 즈음부터 딥러닝 적용이 본격화되면서 빠르면서도 품질 좋은 모델이 등장하기 시작했습니다!
+
+<div className="justify-items-center rounded-xl p-2 border-2 border-gray-300 m-5">
+  <h4>FastSpeech 2 (2020)</h4>
+  <audio controls className="mb-3">
+    <source src={require("../static/audio/FastSpeech-example.wav").default} type="audio/wav" />
+  </audio>
+  <div className="text-center w-xl text-sm">secret service agents formed a cordon to keep the press and photographers from impeding their passage and scanned the crowd for threatening movements.</div>
+</div>
+
+품질이 어느정도 보장되자 TTS는 더 넓은 갈래로 뻗어나가기 시작했습니다. 예를 들어,
+
+- **다국어 TTS**: 한 모델이 여러 언어를 자연스럽게 합성할 수 있습니다!
+- **Zero-shot / Few-shot 음성 합성**: 새로운 화자의 목소리를 별도의 학습 없이 흉내 내거나, 아주 적은 학습으로도 흉내낼 수 있습니다!
+- **스타일, 감정 제어**: 발화의 톤, 속도, 감정을 직접 조절할 수 있습니다!
+
+<div className="justify-items-center rounded-xl p-2 border-2 border-gray-300 m-5">
+  <h4>ChatTTS (2024.5)</h4>
+  <audio controls className="mb-3">
+    <source src={require("../static/audio/ChatTTS-example.wav").default} type="audio/wav" />
+  </audio>
+  <div className="text-center w-xl text-sm">
+    <div>chat T T S is a text to speech model designed for dialogue applications.</div>
+    <div>[uv_break]it supports mixed language input [uv_break]and offers multi speaker </div>
+    <div>capabilities with precise control over prosodic elements like </div>
+    <div>[uv_break]laughter[uv_break][laugh], [uv_break]pauses, [uv_break]and intonation. </div>
+    <div>[uv_break]it delivers natural and expressive speech,[uv_break]so please</div>
+    <div>[uv_break] use the project responsibly at your own risk.[uv_break]</div>
+  </div>
+</div>
+
+---
+
+## 자습서 로드맵
+
+이 자습서에서는 TTS를 단순히 쓰는 데 그치지 않고, 직접 원리를 이해하고 구현할 수 있도록 다음과 같은 단계를 밟습니다.
+
+1. **Python Advanced**  
+    - Python을 이용한 데이터 처리, 시각화, 오디오 다루기.  
+    - Numpy, Scipy, librosa, PyTorch 같은 라이브러리 익히기.  
+
+2. **Mathematics & Machine Learning Base**  
+    - 확률론, 통계학.
+    - 머신러닝/딥러닝 기본 개념과 PyTorch 실습.
+
+3. **Actual Papers & Models**  
+    - 전통적인 합성 모델에서 현대 딥러닝 기반 모델까지 따라가기.
+    - Tacotron, FastSpeech, WaveNet, HiFi-GAN 같은 논문과 구현 분석.
+    - 직접 TTS 모델 학습 및 합성 시도.
+
+이 로드맵을 따라가면, 단순히 TTS를 쓰는 사람을 넘어 **TTS를 원리부터 이해하고, 직접 만들어볼 수 있는 사람**으로 성장할 수 있습니다. 그리고 무엇보다, 공부할수록 "와, 내가 만든 문장이 실제 목소리로 나오는구나!" 하는 즐거움을 바로 느낄 수 있습니다. 🎉

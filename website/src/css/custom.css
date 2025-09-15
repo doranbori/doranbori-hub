@@ -43,7 +43,6 @@ html[data-theme='dark'] {
   --ifm-navbar-link-hover-color: var(--rustynut-super-lightest);
   --ifm-navbar-link-color: #FFFFFF;
   --ifm-link-hover-color: var(--rustynut-lightest);
-  --ifm-link-color: var(--rustynut-lightest);
   --ifm-background-color: var(--espresso-darkest);
   --ifm-color-primary: var(--rustynut-super-lightest);
   --ifm-footer-background-color: #0a141c;
@@ -143,5 +142,16 @@ html[data-theme='dark'] .prism-code {
   background-color: oklch(0.25 0.02 0) !important;
 }
 
+ul {
+  @apply list-disc;
+}
+
+ol {
+  @apply list-decimal;
+}
+
+li {
+  @apply leading-relaxed mb-1;
+}
 
 @import "tailwindcss";
