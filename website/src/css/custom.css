@@ -47,6 +47,32 @@ html[data-theme='dark'] {
   --ifm-background-color: var(--espresso-darkest);
   --ifm-color-primary: var(--rustynut-super-lightest);
   --ifm-footer-background-color: #0a141c;
+
+  /* Secondary */
+  --ifm-color-secondary-contrast-background: #3B3B3C;
+  --ifm-color-secondary-contrast-foreground: #FDFDFE;
+  --ifm-color-secondary-dark: #474748;
+
+  /* Success */
+  --ifm-color-success-contrast-background: #1F451F;
+  --ifm-color-success-contrast-foreground: #C8E5C8;
+  --ifm-color-success-dark: #2F5D2F;
+
+  /* Info */
+  --ifm-color-info-contrast-background: #1B4555;
+  --ifm-color-info-contrast-foreground: #C9EBF6;
+  --ifm-color-info-dark: #2A5A6D;
+
+  /* Warning */
+  --ifm-color-warning-contrast-background: #4A3A11;
+  --ifm-color-warning-contrast-foreground: #F8EED9;
+  --ifm-color-warning-dark: #624B1B;
+
+  /* Danger */
+  --ifm-color-danger-contrast-background: #5A1F21;
+  --ifm-color-danger-contrast-foreground: #FFD2D3;
+  --ifm-color-danger-dark: #722E30;
+
   /**
   --ifm-color-primary: #25c2a0;
   --ifm-color-primary-dark: #21af90;
