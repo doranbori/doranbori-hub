@@ -47,6 +47,7 @@ html[data-theme='dark'] {
   --ifm-background-color: var(--espresso-darkest);
   --ifm-color-primary: var(--rustynut-super-lightest);
   --ifm-footer-background-color: #0a141c;
+  --ifm-font-family-base: 'Noto Sans KR' sans-serif;
 
   /* Secondary */
   --ifm-color-secondary-contrast-background: #3B3B3C;
@@ -108,7 +109,8 @@ html {
 .alert > div:first-child {
   display: flex;
   align-items: center;
-}
+  line-height: 1.5;
+};
 
 .header-github-link {
   opacity: 0.6;
