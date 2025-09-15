@@ -105,6 +105,10 @@ html {
   font-family: 'Noto Sans KR', sans-serif;
 }
 
+.alert > div:first-child {
+  display: flex;
+  align-items: center;
+}
 
 .header-github-link {
   opacity: 0.6;
