@@ -22,7 +22,7 @@ export default function Home(): ReactNode {
           </div>
 
           <button className="mt-10 px-6 py-3 bg-yellow-500 text-black font-semibold rounded-lg hover:bg-yellow-600 transition-colors cursor-pointer">
-            <div className="text-black" onClick={() => location.href="/doranbori-hub/docs/intro"}>자습서 바로가기</div>
+            <div className="text-black" onClick={() => location.href="/doranbori-hub/docs/startover"}>자습서 바로가기</div>
           </button>
         </div>
       

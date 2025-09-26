@@ -96,7 +96,7 @@ const config: Config = {
           items: [
             {
               label: 'Tutorial',
-              to: '/docs/intro',
+              to: '/docs/startover',
             },
           ],
         },
@@ -132,7 +132,7 @@ const config: Config = {
     },
     prism: {
       theme: themes.vsLight,
-      darkTheme: themes.vsDark,
+      darkTheme: themes.gruvboxMaterialDark,
     },
   } satisfies Preset.ThemeConfig,
 };

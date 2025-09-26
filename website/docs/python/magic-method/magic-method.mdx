@@ -1,0 +1,493 @@
+---
+id: dunders
+title: Magic Method
+---
+
+import Intro from '@site/src/components/Intro';
+import Card from '@site/src/components/Card';
+import Orange from '@site/src/components/Orange';
+
+<Intro>
+
+Python에서 *언더바(`_`) 두 개로 감싼* 메서드를 **Dunder Method**라고 합니다. 보통 이러한 메서드들은 미리 지정된 특별한 역할을 갖는 경우가 많아 **Magic Method**라고 불리기도 합니다(공식적으로는 *Special Method*). 이번 자습서에서는 Python의 다양한 메직 메서드에 대해 알아보고, 직접 `Matrix` 객체를 만들어보겠습니다.
+
+</Intro>
+
+---
+
+## Operator Overiding
+Python에서 `+` 같은 **연산자**들은 데이터의 종류에 따라 다르게 동작합니다.
+
+```python
+print( 1  +  1 )    # 2
+print("1" + "1")    # 11
+```
+
+이런 동작이 가능한 이유는 연산자가 사실 메직 메서드로 정의되어 있기 때문입니다! 예를 들어 `+` 연산은 `__add__`라는 이름의 메직 메서드를 호출합니다.
+
+```python
+print((1).__add__(1))       # 2
+print("1".__add__("1"))   # 11
+```
+
+
+그래서, 우리가 만든 클래스에도 `__add__` 메서드를 잘 정의해주면 연산자를 적용할 수 있습니다.
+```python
+class AddData:
+    def __init__(self, data):
+        self.data = data
+    def __add__(self, other):
+        return self.data + other
+
+print(AddData(5) + 3)   # 8
+```
+
+> <Orange>**주의!**</Orange> **왼쪽 객체의 `__add__`를 불러오는 것이므로 `3 + AddData`는 정상적으로 동작하지 않습니다.**
+
+<Card title="Vector3D 클래스 만들기">
+
+3차원 벡터를 나타내는 `Vector3D` 클래스에, 벡터간의 덧셈, 뺄셈, [외적(벡터곱)](https://en.wikipedia.org/wiki/Cross_product), 마이너스 연산을 정의해주세요.
+- 덧셈: `__add__`
+    
+    ```python
+    Vector3D(1, 2, 3) + Vector3D(4, 5, 6)   # Vector3D(5, 7, 9)
+    ```
+- 뺄셈: `__sub__`
+
+    ```python
+    Vector3D(1, 2, 3) - Vector3D(3, 2, 1)   # Vector3D(-2, 0, 2)
+    ```
+
+- 외적: `__mul__`
+
+    ```python
+    Vector3D(1, 2, 3) * Vector3D(4, 5, 6)   # Vector3D(-3, 6, -3)
+    ```
+
+
+- 마이너스: `__neg__`
+
+    ```python
+    -Vector3D(1, 3, 5)    # Vector3D(-1, -3, -5)
+    ```
+
+> <Orange>**참고**</Orange>: **일반적으로 예상하지 못한 연산이 들어온 경우 `raise NotImplemented`로 예외처리합니다.**
+
+    ```python
+    Vector(1, 2, 3) + 3   # NotImplementedError!
+    ```
+
+---
+**구현 예시**
+
+```python
+class Vector3D:
+    def __init__(self, x: float, y: float, z: float):
+      self.x = x
+      self.y = y
+      self.z = z
+    
+    def __add__(self, other): ...
+    def __sub__(self, other): ...
+    def __mul__(self, other): ...
+    def __neg__(self): ...
+```
+
+</Card>
+
+이제 조금 더 본격적으로 메직 메서드를 살펴봅시다.
+
+---
+
+## String Representation
+
+### `__str__`
+`__str__` 메서드는 객체를 문자열로 변환하는 방법을 정해주는 메서드입니다. 예를 들어, 다음과 같이 사용할 수 있습니다.
+
+```python
+class Person:
+    def __init__(self, name):
+        self.name = name
+
+    def __str__(self):
+        return f"I'm {self.name}!"
+
+str(Person("John"))     # "I'm John!"
+```
+
+또는 `print`로 출력할 때에도 자동으로 `str`로의 변환을 사용합니다.
+```python
+print(Person("John"))   # I'm John!
+```
+
+### `__repr__`
+
+한 편, 비슷한 역할의 `__repr__` 메서드도 있습니다. `__repr__`도 마찬가지로 문자열로의 변환 방법을 다루는 함수이지만, 개발자가 읽고 사용하기 쉽도록 하는 만들어지는 것이 `__repr__`입니다.
+
+```python
+import datetime
+f = datetime.datetime(1972, 11, 21)
+
+>>> str(f)
+'1972-11-21 00:00:00'                       # 비공식, 유저 친화적
+>>> repr(f)
+'datetime.datetime(1972, 11, 21, 0, 0)'     # 공식, 개발자 친화적(복붙만으로 재현 가능)
+```
+
+`repr` 형식의 출력은 Jupyter 노트북에서 자주 확인할 수 있습니다.
+
+```python
+>>> f                                       # 그냥 적으면 `repr`로 변환함
+'datetime.datetime(1972, 11, 21, 0, 0)'
+```
+
+<Card title="Vector3D 클래스 출력 정해주기">
+
+`Vector3D` 클래스에 적절한 문자열 출력 형식을 정해주세요!
+
+- `__str__`
+
+    ```python
+    print(Vector3D(1, 2, 3))    # v[1, 2, 3]
+    ```
+
+- `__repr__`
+
+    ```python
+    repr(Vector3D(1, 2, 3))     # Vector3D(1, 2, 3)
+    ```
+
+---
+
+**구현 예시**
+
+```python
+class Vector3D:
+    ...
+
+    def __str__(self): ...
+    def __repr__(self): ...
+```
+
+</Card>
+
+---
+
+## Operators
+이번에는 `Vector3D`에 *스칼라배*를 정의해보려 합니다. 그냥 간단히,
+```python
+>>> 3 * Vector3D(1, 2, 3)
+Vector3D(3, 6, 9)
+```
+이 되도록 하고 싶은 거에요! 좋아요, 그럼 `__mul__`를 설정해주면 되겠네요?
+
+:::warning 이런!
+앞서 보았듯이 `__mul__` 형식의 메서드는 <Orange>**왼쪽**</Orange> 연산자 메서드입니다. 따라서 우리가 `Vector3D`에 `__mul__`를 만들어준다고 해도, `3`의 클래스인 `int`에는 `Vector3D`와의 `__mul__`이 정의되어 있지 않아 오류가 발생할 겁니다!
+```python
+>>> 3 * Vector3D(1, 2, 3)
+NotImplementedError
+```
+:::
+
+이런 상황을 위해 python은 **Righthand Operator**를 제공합니다! `__mul__`에서 `NotImplementedError`가 발생한 경우 `__rmul__`를 실행합니다!
+
+또 다른 상황입니다. 일반적으로 `*=`는 곱하고 대입하라는 뜻이므로 `__mul__`만 있어도 잘 작동합니다.
+```python
+x = Vector3D(1, 2, 3)
+x *= 3          # Vector3D(3, 6, 9)
+```
+한 편, 이 방법은 <u>새로운 객체를 만들어</u> `x`에 대입하는 방법입니다. 곱셈을 하면 새로운 객체가 생성되고 이걸 `x`에 넣어주는 거죠. 그래서, 객체 생성이 오래 걸린다면 매우 큰 계산 비용이 발생합니다!
+
+그래서 Python은 수정 대입 연산자(*In-place Operator*)도 수정해줄 수 있습니다! 예를 들어 `*=`는 `__imul__`에 대응됩니다.
+```python
+class Vector3D:
+    ...
+    def __imul__(self, other):
+        # 객체를 아예 새로 생성하지 않고 값만 수정
+        self.x *= other
+        self.y *= other
+        self.z *= other
+
+x = Vector3D(1, 2, 3)
+x *= 3      # Vector3D(3, 6, 9)
+```
+
+Python에서 다룰 수 있는 연산자들은 아래와 같습니다! 당연히 다 외우실 필요는 없고 필요에 따라 참고하시면 될 것 같아요.
+
+<table>
+  <thead>
+    <tr>
+      <th>Operator</th>
+      <th>Method</th>
+      <th>R-Method</th>
+      <th>I-Method</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr><td>`+`</td><td>`__add__`</td><td>`__radd__`</td><td>`__iadd__`</td></tr>
+    <tr><td>`-`</td><td>`__sub__`</td><td>`__rsub__`</td><td>`__isub__`</td></tr>
+    <tr><td>`*`</td><td>`__mul__`</td><td>`__rmul__`</td><td>`__imul__`</td></tr>
+    <tr><td>`@`</td><td>`__matmul__`</td><td>`__rmatmul__`</td><td>`__imatmul__`</td></tr>
+    <tr><td>`/`</td><td>`__truediv__`</td><td>`__rtruediv__`</td><td>`__itruediv__`</td></tr>
+    <tr><td>`//`</td><td>`__floordiv__`</td><td>`__rfloordiv__`</td><td>`__ifloordiv__`</td></tr>
+    <tr><td>`%`</td><td>`__mod__`</td><td>`__rmod__`</td><td>`__imod__`</td></tr>
+    <tr><td>`**`</td><td>`__pow__`</td><td>`__rpow__`</td><td>`__ipow__`</td></tr>
+    <tr><td>`<<`</td><td>`__lshift__`</td><td>`__rlshift__`</td><td>`__ilshift__`</td></tr>
+    <tr><td>`>>`</td><td>`__rshift__`</td><td>`__rrshift__`</td><td>`__irshift__`</td></tr>
+    <tr><td>`&`</td><td>`__and__`</td><td>`__rand__`</td><td>`__iand__`</td></tr>
+    <tr><td>`|`</td><td>`__or__`</td><td>`__ror__`</td><td>`__ior__`</td></tr>
+    <tr><td>`^`</td><td>`__xor__`</td><td>`__rxor__`</td><td>`__ixor__`</td></tr>
+
+    <tr><td>`<`</td><td>`__lt__`</td><td></td><td></td></tr>
+    <tr><td>`<=`</td><td>`__le__`</td><td></td><td></td></tr>
+    <tr><td>`>`</td><td>`__gt__`</td><td></td><td></td></tr>
+    <tr><td>`>=`</td><td>`__ge__`</td><td></td><td></td></tr>
+    <tr><td>`==`</td><td>`__eq__`</td><td></td><td></td></tr>
+    <tr><td>`!=`</td><td>`__ne__`</td><td></td><td></td></tr>
+  </tbody>
+</table>
+
+---
+
+## Collections
+Python은 여러가지 *모임*을 정의하기 위한 메직 메서드들이 정의되어 있습니다. 그리고, 정의된 메직 메서드들에 따라 모임 클래스에 여러가지 이름을 붙이기도 합니다. 이러한 모임 클래스는 `collections.abc` 모듈에 정의되어 있습니다!
+
+> <Orange>모임 클래스는 특히 데이터베이스 등에서 매우 중요하게 사용됩니다. 앞선 Operator보다 훨씬 중요하니 유의깊게 봐주세요!!!</Orange>
+
+### Container
+`__contains__` 메직 메서드는 `in` 연산에 대응됩니다.
+
+```python
+# 아래 둘은 같습니다.
+1 in [1, 2, 3]
+[1, 2, 3].__contains__(1)
+```
+
+이렇게 `__contains__`가 정의되어 있는 객체를 `Container`라고 합니다.
+
+```python
+class Vector3D(Container):
+    def __contains__(self, element):
+        return element in (self.x, self.y, self.z)
+```
+
+### Sized
+`__len__` 메직 메서드는 `len` 함수 호출 시 사용됩니다.
+
+```python
+len([1, 2, 3])          # 이렇게 호출하면 자동으로
+[1, 2, 3].__len__()     # 이것을 반환으로 사용합니다.
+```
+
+이렇게 `__len__`이 정의되어 있는 객체를 `Sized`라고 합니다.
+
+```python
+class Vector3D(Sized):
+    def __len__(self):
+        return 3
+```
+
+### Iterator와 Iterable
+> <Orange>매우 중요합니다!!!!!!!!</Orange>
+> 
+> `__iter__` 메직 메서드를 가진 클래스를 `Iterable`라고 합니다. 이는 **반복 가능한 객체**라는 뜻으로, 대표적으로 `for`문에서 사용할 수 있습니다. 대표적으로 `list`는 `__iter__`를 가지고 있습니다.
+
+```python
+dir(list)
+# ..., __iter__
+```
+
+`Iterable` 객체는 `iter` 함수로 `Iterator`로 변환할 수 있습니다.
+
+```python
+iter([1, 2, 3])
+# <list_iterator at ...>
+```
+
+실제로 `for`문을 사용하면 자동으로 `iter`를 사용해 `Iterator`로 변환한 후에, `next`함수의 반환 결과를 차례대로 값으로 정해줍니다. `Iterator`는 `__next__`가 정의되어 `next`함수로 값을 받아올 수 있는 객체를 말합니다.
+
+예를 들어, 다음은 영원히 `1`을 반복하는 객체입니다.
+
+```python
+class OneIterator(Iterator):
+    def __next__(self):
+        return 1
+```
+
+> <Orange>주의하세요!</Orange> Iterable과 Iterator는 다릅니다! `__next__`만 있는 함수는 반복문에서 사용할 수 없습니다!
+>
+>```python
+>for one in OneIterator():
+>     ...
+># 'OneIterator' object is not iterable
+>```
+
+이런 경우 `__iter__`로 자기 자신을 반환하게 하면 `Iterable`이자 `Iterator`로 사용할 수 있습니다.
+```python
+class OneIterator(Iterable, Iterator):
+    def __iter__(self):
+        return self
+    def __next__(self):
+        return 1
+
+for one in OneIterator():
+    ...
+# 무한 반복!
+```
+
+무한 반복을 막고자하는 경우에는 정지 시점에 `StopIteration` 예외를 발생시키면 됩니다! 예를 들어 아래는 `1`을 100번 반환하는 예입니다!
+```python
+class OneIterator(Iterable, Iterator):
+    STOPAT=100
+    def __iter__(self):
+        self.iterated = 0
+        return self
+    def __next__(self):
+        self.iterated += 1
+        if self.iterated == self.STOPAT:
+            raise StopIteration
+        return 1
+```
+
+Python의 `itertools` 모듈은 사용하기 좋은 여러 `Iterable` 클래스를 제공합니다! 경우에 따라 사용해보셔도 좋을 것 같아요 :>
+
+### Generator
+> <Orange>매우 중요합니다!!!!!!!!</Orange> 
+> 
+> Python에서 `Generator`는 `Iterable`이자 `Iterator`인 클래스입니다! `Generator`는 값을 **차례대로** 반환하는 객체(일반적으로 함수)를 말합니다! 기본적으로는 <Orange>제네레이터 표현식</Orange>을 제공합니다!
+
+```python
+OneToTen = (i for i in range(10))
+print(OneToTen)
+# <generator object <genexpr> at ...>
+
+for i in OneToTen:
+    print(i, end=", ")
+# 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 
+```
+
+값을 여러 번 반환하기 위해서 `Generator`는 `yield` 키워드를 사용합니다! `Generator`는 Python에서 기본적으로 다음과 같이 정의합니다.
+
+```python
+# 1을 100번 반환
+def one_iterator():
+    i = 0
+    while i != 100:
+        yield 1
+```
+
+이렇게 정의된 함수는 사실 호출하면 `Generator`로 변환됩니다!
+
+```python
+print(one_iterator())
+# <generator object one_iterator at ...>
+```
+
+그래서 예를 들어, 다음과 같이 `for` 문에서 사용할 수 있습니다!
+```python
+for one in one_iterator():
+    # one은 1로 100번
+    ...
+```
+
+또는 아까 `for`문은 자동으로 `iter`를 사용한다는 것을 기억하신다면, `__iter__` 자체를 `Generator`로 정의하여 `__next__` 없이 `Iterator`를 흉내낼 수도 있습니다!
+
+```python
+class OneIterator(Iterable):
+    def __iter__(self):
+        iterated = 0
+        while iterated != 100:
+            iterated += 1
+            yield 1
+        # 더 이상 출력되는 게 없으면 자동으로 반복이 종료된 것으로 이해함!
+
+for i in OneIterator():
+    ...
+```
+
+### Reversible
+`__reversed__` 메직 메서드는 `reversed` 클래스에서 사용됩니다. 간단히 *거꾸로 반복하는 iter*라고 생각하시면 편합니다.
+
+
+```python
+x = reversed([1, 2, 3])
+print(x)
+
+for i in x:
+    print(i, end=", ")
+# <list_reverseiterator object at 0x7a761431a500>
+# 3, 2, 1, 
+```
+
+이렇게 `__reversed__`가 정의되어 있는 객체를 `Reversible`이라고 합니다. 
+
+```python
+class Vector3D(Reversible):
+    def __reversed__(self):
+        yield self.z
+        yield self.y
+        yield self.x
+```
+
+### Sequence
+`__len__`과 `__geitem__`이 정의된 클래스를 `Sequence`라고 합니다. `__getitem__`은 `list[0]`와 같은 **인덱스 기반 요소 접근**에서 사용합니다!
+
+```python
+[1, 2, 3].__getitem__(1)
+# 2
+```
+
+예를 들어, `Even` 클래스를 만들어 `index`번째 짝수를 반환해봅시다!
+
+
+```python
+class Even:
+    def __getitem__(self, index):
+        return index * 2
+
+evens = Even()
+print(evens[3])         # 3번째 짝수는 6
+# 6
+```
+
+대표적으로 `list`와 `tuple`이 `Sequence`에 해당합니다!
+
+### Mapping
+한 편, 우리는 `dict[key]`와 같이 같은 연산자 `[]`를 딕셔너리에서도 사용합니다! 이 때에도 똑같이 `__getitem__`을 사용하며, 이렇게 **키 기반 요소 접근**을 허용하는 `Sized`, `Iterable` 객체를 `Mapping`이라고 합니다!
+
+```python
+class OneForAllKey(Mapping):
+    ...
+
+    def __getitem__(self, key):
+        return 1
+
+OneForAllKey()["Any Key!"]
+# 1
+```
+
+### MutableSequence와 MutableMapping
+앞서 말한 `__getitem__`이 요소를 얻는 것이었다면, 요소를 **설정**하는 `__setitem__`과 요소를 **제거**하는 `__delitem__`도 있습니다! 그리고 이 두 연산과, 기타 메서드를 포함하는 `Sequence`와 `Mapping`을 각각 `MutableSequence`, `MutableMapping`이라고 합니다!
+
+```python
+class SameForAllKey(MutableSequence):
+    ...
+
+    def __getitem__(self, key):
+        return self.value
+        # dict[key]에 대응됩니다!
+
+    def __setitem__(self, key, value):
+        self.value = value
+        # dict[key] = value에 대응됩니다!
+
+    def __delitem__(self, key):
+        self.value = None
+        # del dict[key]에 대응됩니다!
+```
+
+---
+
+수고하셨습니다... 우리가 오늘 다뤄볼 Python Magic Method는 여기까지입니다...
+
+메직 메서드는 중요하지만 당연히 전부 외우고 사용하는 것은 시간이 필요합니다. 지금은 *이런 것들이 있다*는 것을 이해하고 필요에 따라 검색해서 사용할 수 있도록 하시면 좋을 것 같습니다!
