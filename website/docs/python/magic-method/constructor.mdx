@@ -1,0 +1,318 @@
+---
+id: constructor
+title: 인스턴스
+---
+
+import Intro from '@site/src/components/Intro';
+import Card from '@site/src/components/Card';
+import Orange from '@site/src/components/Orange';
+
+<Intro>
+
+Python에서는 관련된 데이터나 함수를 묶어서 표현하기 위해 **객체**를 사용합니다. 객체가 묶여있는 방식을 정해주기 위해 **클래스**를 정의하고, 클래스를 바탕으로 **인스턴스**(객체)를 **생성**할 수 있습니다. 이번 자습서에서는 인스턴스가 실제로 만들어지는 과정을 따라가며 싱글톤 패턴을 설계해보겠습니다.
+
+</Intro>
+
+---
+
+## 객체
+
+객체는 데이터와 함수들을 묶어놓은 *덩어리*(?)입니다. 객체가 갖는 데이터와 함수들을 **속성**(attribute)이라고 하며, `dir` 함수로 확인할 수 있습니다. 예를 들어, 다음은 `int` 클래스의 인스턴스인 `1`의 속성들을 확인하는 예시입니다.
+
+```python
+dir(1)
+# ['__abs__', '__add__', '__and__', '__bool__', '__ceil__', '__class__', '__delattr__', '__dir__', '__divmod__', '__doc__', '__eq__', '__float__', '__floor__', '__floordiv__', '__format__', '__ge__', '__getattribute__', '__getnewargs__', '__getstate__', '__gt__', '__hash__', '__index__', '__init__', '__init_subclass__', '__int__', '__invert__', '__le__', '__lshift__', '__lt__', '__mod__', '__mul__', '__ne__', '__neg__', '__new__', '__or__', '__pos__', '__pow__', '__radd__', '__rand__', '__rdivmod__', '__reduce__', '__reduce_ex__', '__repr__', '__rfloordiv__', '__rlshift__', '__rmod__', '__rmul__', '__ror__', '__round__', '__rpow__', '__rrshift__', '__rshift__', '__rsub__', '__rtruediv__', '__rxor__', '__setattr__', '__sizeof__', '__str__', '__sub__', '__subclasshook__', '__truediv__', '__trunc__', '__xor__', 'as_integer_ratio', 'bit_count', 'bit_length', 'conjugate', 'denominator', 'from_bytes', 'imag', 'numerator', 'real', 'to_bytes']
+```
+
+모든 객체는 자신이 어떤 클래스로 정의되었는 지 확인하기 위해 `__class__` 변수를 속성으로 갖습니다. 이건 우리가 따로 정의해주는 게 아니라, 자동으로 생성되는 변수입니다.
+
+```python
+(1).__class__
+# <class 'int'>
+```
+
+반대로 이야기하면, 모든 객체는 **클래스**를 통해서만 정의됩니다. 클래스가 지정되지 않은 객체는 존재할 수 없습니다.
+
+---
+
+## 클래스
+
+클래스를 정의하기 위해서는 `class` 키워드를 사용합니다.
+
+```python
+class MyClass:
+    ...
+```
+
+<details>
+  <summary>참고: 말줄임표 `...`</summary>
+
+  영어로 말줄임표 ...를 ellipsis라고 합니다. Python에서도 이런 말줄임표 `...`를 사용할 수 있습니다! 딱히 의미가 있지는 않고, 보통 정의를 생략할 때 `pass` 키워드 대신으로 많이 사용됩니다.
+
+  ```python
+  (...).__class__
+  # <class 'ellipsis'>
+  ```
+
+</details>
+
+클래스는 정의하는 것만으로도 다양한 속성들이 자동으로 정의됩니다!
+
+```python
+dir(MyClass())
+# ['__class__', '__delattr__', '__dict__', '__dir__', '__doc__', '__eq__', '__format__', '__ge__', '__getattribute__', '__getstate__', '__gt__', '__hash__', '__init__', '__init_subclass__', '__le__', '__lt__', '__module__', '__ne__', '__new__', '__reduce__', '__reduce_ex__', '__repr__', '__setattr__', '__sizeof__', '__str__', '__subclasshook__', '__weakref__']
+```
+
+특히, **사용자 정의 클래스**에는 일반적으로 `__dict__` 속성이 정의되고, 이는 인스턴스에 정의된 속성들을 딕셔너리 형태로 모아둔 것입니다. 지금은 따로 정의된 속성이 없으니, 아마도 비어있겠죠?
+
+```python
+MyClass().__dict__
+# {}
+```
+
+클래스에 다양한 속성들을 추가하며 실제로 `__dict__`가 변화하는 과정을 살펴봅시다!
+
+---
+
+### 인스턴스 변수
+
+Python은 자율성이 매우 큰 언어이기 때문에, **인스턴스에 원래 없던 속성을 추가**하는 것이 가능합니다. 예를 들어, 아까 우리가 정의한 `MyClass` 클래스는 아무런 속성도 지정되어 있지 않아 `__dict__`가 비어 있었습니다. 하지만 다음과 같이, 인스턴스가 생성된 이후에도 값을 새로 추가해줄 수 있습니다.
+
+```python
+x = MyClass()
+x.data = 1
+x.__dict__
+# {'data': 1}
+```
+
+`x.data`에 접근하면 실제로는 `x.__dict__["data"]`에 접근합니다.
+
+```python
+x.__dict__["data"]
+# 1
+```
+
+이렇게 인스턴스가 생성된 이후에 정의되는 속성을 **인스턴스 변수**라고 합니다.
+
+---
+
+### 클래스 변수
+
+반대로 클래스를 정의하는 시점에 클래스에 직접 만들어주는 변수들을 **클래스 변수**라고 합니다.
+
+```python
+class MyClass2:
+    data = 1
+```
+
+클래스 변수는 *인스턴스에 정의된 것이 아니므로* `__dict__`에 정의되지 않고, `dir`에만 포함됩니다.
+
+```python
+x = MyClass2()
+dir(x)
+# ['__class__', '__delattr__', '__dict__', '__dir__', '__doc__', '__eq__', '__format__', '__ge__', '__getattribute__', '__getstate__', '__gt__', '__hash__', '__init__', '__init_subclass__', '__le__', '__lt__', '__module__', '__ne__', '__new__', '__reduce__', '__reduce_ex__', '__repr__', '__setattr__', '__sizeof__', '__str__', '__subclasshook__', '__weakref__', 'data']
+x.__dict__
+# {}
+```
+
+또한 인스턴스에서 클래스 변수에 접근할 수도 있습니다. 다만, 수정을 시도할 경우 `__dict__`에 포함되어 있지 않기 때문에 새로운 인스턴스 변수를 생성하는 것이 됩니다! 읽기 전용이라고 이해하시면 좋아요.
+
+```python
+x.data = 3
+print(MyClass2.data)
+# 1
+# 안바뀜!!
+```
+
+재차 강조하건데 클래스 변수는 인스턴스에 정의된 것이 아니므로 변경하면 *클래스 자체에서 변수를 수정*할 수 있습니다. 이 경우 인스턴스들에 할당된 클래스 변수도 당연히 바뀝니다.
+
+```python
+y = MyClass2()
+MyClass2.data = 2
+y.data      # 클래스 변수를 참조하는 y는 data의 변화가 반영됩니다.
+# 2
+x.data      # 반면 이미 인스턴스 변수로 덮어씌워버린 x에서는 변화를 감지하지 못합니다.
+# 3
+```
+
+---
+
+### 메서드
+
+함수 형태로 정의된 클래스 변수를 **메서드**라고 합니다. 메서드는 다른 클래스 변수들과 달리 `__class__`로 `method`라는 클래스를 갖습니다.
+
+```python
+class MyClass3:
+    def test():
+        ...
+
+x = MyClass3()
+x.test.__class__
+# <class 'method'>
+```
+
+> 네. **메서드도 객체**입니다. 아니, 메서드만이 아닙니다. 함수도, 심지어는 **클래스도 객체**입니다. 자세한 내용은 나중에... 다뤄보는 걸로 할게요.
+
+메서드가 함수와 달리 따로 `method`라는 클래스로 정의되는 것은 **인스턴스에 따라 다르게 작동**해야 하기 때문입니다.
+
+메서드에서 인스턴스 변수에 접근하는 것은 매우 흔하게 일어납니다. 예를 들어, `1`과 `2`는 모두 `int` 클래스의 인스턴스로, `__str__` 메서드를 갖습니다. 하지만 그 반환 결과가 다르죠. 이는 메서드가 *자신을 호출한 인스턴스에 접근할 수 있었기 때문*입니다.
+
+```python
+(1).__str__()
+# '1'
+(2).__str__()
+# '2'
+```
+
+그래서 메서드는 클래스 변수이지만, 인스턴스에 따라 서로 달라야 합니다. 정확히 말하자면 *자신을 호출한 인스턴스*를 알 수 있어야 합니다. 이러한 이유로 메서드는 인스턴스 생성 시점에 인스턴스와 묶여 새로 생성됩니다.
+
+```python
+x.test
+# <bound method MyClass.test of <__main__.MyClass object at 0x781d99ad6950>>
+```
+
+다시 말하자면 메서드는 인스턴스 생성 시점에 새로 생성됩니다. 그래서 **클래스에 정의된 메서드는 메서드가 아니라 일반적인 함수**입니다.
+
+```python
+MyClass3.test
+# <function MyClass.test at 0x7a1913e82fc0>
+```
+
+이러한 이유로 메서드는 클래스 변수이지만, 일반적인 클래스 변수와 달리 인스턴스 생성 시점에 *구분되어 정의*되므로 메서드라는 이름으로 따로 불립니다.
+
+<details>
+  <summary>심화: `__self__`</summary>
+
+  일반적인 함수들은 분명 인자를 모두 넣어주어야 실행이 가능했습니다. 그러나 메서드에서는 항상 `self`를 정의하는데, 막상 `self`로 인스턴스를 넣어준 적이 없어서 의아하게 생각하셨을 수 있습니다. 실제로, 클래스를 통해 함수를 호출할 때에는 `self`가 없으면 오류가 납니다.
+
+  ```python
+  class Example:
+      def test(self):
+          ...
+  Example.test()
+  # TypeError: Example.test() missing 1 required positional argument: 'self'
+  ```
+
+  메서드는 인스턴스에서 새로 생성될 때, 해당 인스턴스를 `__self__` 변수로, 원래 함수를 `__func__` 메서드로 저장합니다. 그래서 메서드를 호출할 때에는 이 속성을 첫 번째 인자로 무조건 넣도록 설계되어 있습니다.
+
+  ```python
+  dir(Example().test)
+  # ['__call__', '__class__', '__delattr__', '__dir__', '__doc__', '__eq__', '__format__', '__func__', '__ge__', '__getattribute__', '__getstate__', '__gt__', '__hash__', '__init__', '__init_subclass__', '__le__', '__lt__', '__ne__', '__new__', '__reduce__', '__reduce_ex__', '__repr__', '__self__', '__setattr__', '__sizeof__', '__str__', '__subclasshook__']
+  ```
+
+  다시 말하자면, 인스턴스에서 메서드를 호출할 때에는 메서드가 자신의 `__func__`를 호출하고, 첫 번째 변수로 자신의 `__self__`를 넣어주는 방식으로 동작합니다.
+
+  ```python
+  x = Example()
+
+  # 이 둘은 같습니다.
+  x.test()
+  x.test.__func__(x.test.__self__)
+  ```
+
+  > 메서드라는 클래스의 객체를 함수처럼 사용하는 것이 의아하실 수도 있습니다. 지금은 받아들여주시고, 다음 시간에 `__call__`를 공부하면서 해소하면 좋을 것 같습니다.
+
+</details>
+
+지금까지 클래스에서 다룰 수 있는 여러 속성들을 살펴보았습니다. 다음으로 인스턴스를 생성하는 과정에 대해 이해해보겠습니다.
+
+---
+
+## 인스턴스
+
+인스턴스는 클래스를 바탕으로 정의되는 객체를 뜻합니다. 이미 아시다 싶이 `instance = Class()`와 같은 방법으로 정의할 수 있습니다.
+
+### `__init__`
+
+많은 강의에서 `__init__`을 반드시 적어주어야 한다고 하지만, 현대적인 Python은 `__init__` 없이도 인스턴스를 생성할 수 있습니다. 
+
+> 이미 아까 당연스럽게 `__init__`이 없던 `MyClass`로 인스턴스를 정의해 `x`에 할당해보았죠?
+
+`__init__`의 목적은 오로지 인스턴스 초기화(initialize)에 있기 때문에, 사실 그냥 인스턴스 변수의 기본값을 만들어주는 게 전부입니다.
+
+```python
+class MyClass4:
+    def __init__(self, data):
+        self.data = data
+```
+
+다시 말해서 아까 인스턴스 변수를 만들기 위해 `x.data = 1`를 했던 것과, `MyClass4(1)`로 `__init__` 메서드 안에서 인스턴스 변수를 생성(`self.data = data`)하는 것은 정확히 같은 동작입니다. 그래서 `__init__`은 목적은 명확하지만 인스턴스 생성과 그다지 관련이 없습니다!
+
+### `__new__`
+
+Python에서 인스턴스의 생성을 직접 관여하는 함수가 바로 `__new__`입니다. 정확하게 말해서, **`__new__` 함수의 반환을 생성된 인스턴스로 이해**합니다. 조금 더 자세하게 말하자면, `Class()`처럼 클래스를 호출할 때 Python 내부적으로는 다음과 같은 일이 일어납니다.
+
+1. `Class`에 `__new__`가 있으면 `instance = Class.__new__(Class)`로 인스턴스를 생성합니다.
+2. 없으면 `instance = object.__new__(Class)`로 인스턴스를 생성합니다.
+3. `instance.__init__()`으로 인스턴스를 초기화합니다.
+
+<details>
+  <summary>심화: `type.__call__`</summary>
+
+  > 많이 심화적인 내용입니다. 클래스가 객체라는 것과, `__call__` 함수의 특성을 모두 제대로 알아야 이해 가능합니다. 후에 재방문을 권장드립니다.
+
+  `class Class`로 정의되는 클래스는 사실 `type` 클래스의 인스턴스입니다. 따라서 `Class()`는 사실 `type` 클래스의 인스턴스를 호출하려고 시도한 것입니다. 다시 말하자면, 이는 `type.__call__(cls)`를 호출한 것과 같습니다.
+
+  ```python
+  # 다음은 같습니다.
+  Class()
+  type.__call__(Class)
+  ```
+
+  여기서 우리가 생각할 수 있는 점은, `__call__` 내부에 인스턴스 생성에 대한 코드가 포함되어 있으리라는 겁니다. 실제로 그렇습니다. 클래스를 정의할 때, 다시 말해 `type`의 인스턴스를 생성할 때 `type.__new__`를 실행할 겁니다. 이 때 클래스의 `__new__`가 있는 지 확인하고, 없으면 built-in method `__new__`를 클래스에 자동으로 할당해줍니다.
+
+  ```python
+  class Example:
+      ...
+
+  print(Example.__new__)
+  # <built-in method __new__ of type object at 0x60512a848310>
+  ```
+
+  그래서 `type.__call__(cls)`이 실행될 때에는 이미 할당된 `__new__` 메서드를 참조하여, `cls.__new__(cls)`를 실행하도록 설계되어 있습니다.
+</details>
+
+`object.__new__`와의 통일성을 위해서, 그리고 클래스의 정보에 직접 접근할 수 있도록 하기 위해, `__new__`는 첫 번째 인자로 클래스를 직접 받습니다.
+
+예를 들어 `__new__`를 아무것도 반환하지 않게 설계하면, 인스턴스로 `None`이 나오게 됩니다.
+
+```python
+class MyClass5:
+    def __new__(cls): ...
+
+print(MyClass5())
+# None
+```
+
+그래서 심지어 인스턴스를 가로채는(?) 것도 가능합니다.
+
+```python
+class MyClass6:
+    def __new__(cls):
+        return MyClass4()
+
+print(MyClass6())
+# <__main__.MyClass3 object at 0x750354194e90>
+```
+
+> 참고: `__new__`와 `__init__`은 인자를 공유합니다.
+
+하지만 사실 `__new__`를 정의할 수 있게 만들어주는 이유는 이런 하찮은 것이 아니라, 인스턴스 자체를 다루기 위함입니다. 아까 말했듯이 클래스 변수는 인스턴스 생성 시점이 아니라, 클래스 정의 시점에 생성됩니다. `__new__` 내에서도 `cls.data` 등을 통해 클래스 변수에 접근할 수 있습니다. 이를 활용하면, 인스턴스를 하나로 강제하는 **싱글톤 패턴**도 만들 수 있습니다.
+
+<Card title="싱글톤 패턴">
+
+인스턴스 생성자가 여러 번 호출되어도 객체가 한 번만 생성되고, 이후에는 모두 처음의 그 객체를 가리키도록 제작된 클래스를 [**싱글톤 패턴**](https://ko.wikipedia.org/wiki/%EC%8B%B1%EA%B8%80%ED%84%B4_%ED%8C%A8%ED%84%B4)을 따른다고 합니다. 이는 인스턴스에 따라 내용이 달라질 필요가 없는 클래스에서, 저장 공간을 크게 단축하기 위해 사용됩니다. 대표적으로 <u>읽기만 가능한 데이터셋</u> 클래스에서, 데이터를 여러 번 저장하지 않도록 하기 위해 사용될 수 있겠죠?
+
+```python
+class Singleton:
+    _instance = None                                # 유일한 인스턴스. 호출이 한 번도 안되었으면 None.
+
+    def __new__(cls):
+        if cls._instance is None:
+            cls._instance = object.__new__(cls)     # object를 사용해서 정의
+        return cls._instance                        # cls._instance가 None이 아니면 Singleton 객체이므로 그냥 반환.
+```
+
+</Card>
+
+> 수고하셨습니다! 되게 개념적이라 어려운 내용이었을 건데, 충분히 이해가 되셨으면 좋겠네요.
