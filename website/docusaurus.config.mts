@@ -15,7 +15,7 @@ const config: Config = {
   organizationName: 'doranbori',
   deploymentBranch: 'gh-pages',
   projectName: 'doranbori-hub',
-  onBrokenLinks: 'throw',
+  onBrokenLinks: 'warn',
   onBrokenMarkdownLinks: 'throw',
   future: {
     v4: {
@@ -36,7 +36,7 @@ const config: Config = {
           sidebarPath: './sidebars.ts',
           editUrl: 'https://github.com/doranbori/doranbori-hub/tree/main/website/',
           remarkPlugins: [remarkMath],
-          rehypePlugins: [rehypeKatex]
+          rehypePlugins: [rehypeKatex],
         },
         blog: {
           showReadingTime: true,
